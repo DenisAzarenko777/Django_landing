@@ -48,7 +48,7 @@ def stats(request):
     counter_click = Counter(new_list2)
     counter_show = Counter(new_list)
     relationship_of_count1 = float(counter_click["test"]/counter_show["test"])
-    relationship_of_count2 = float(counter_click["original"]/counter_show["test"])
+    relationship_of_count2 = float(counter_click["original"]/counter_show["origin"])
     return render(request,'stats.html', context={
         'test_conversion': relationship_of_count1,
         'original_conversion': relationship_of_count2,
