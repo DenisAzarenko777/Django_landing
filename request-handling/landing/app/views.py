@@ -7,8 +7,8 @@ from django.shortcuts import render, reverse
 # в качестве хранилища количества показов и количества переходов.
 # но помните, что в реальных проектах так не стоит делать
 # так как при перезапуске приложения они обнулятся
-counter_show = Counter()
-counter_click = Counter()
+counter_show2 = Counter()
+counter_click2 = Counter()
 new_list = []
 new_list2 = []
 
@@ -16,16 +16,11 @@ def index(request):
     # Реализуйте логику подсчета количества переходов с ленди га по GET параметру from-landing
     name = request.GET['from-landing']
     if name == 'original':
-        new_list2.append('original')
+        counter_click2['original'] += 1
     elif name == 'test':
-        new_list2.append('test')
+        counter_click2['test'] += 1
     return render(request,'index.html')
 
-
-def tt(request):
-    counter_click = Counter(new_list2)
-    counter_show = Counter(new_list)
-    return HttpResponse(f'Counter: {counter_show["test"]}, \n Counter_click: {counter_click["test"]}')
 
 
 def landing(request):
@@ -35,21 +30,20 @@ def landing(request):
     # Так же реализуйте логику подсчета количества показов
     name = request.GET.get('ab-test-arg', 'origin')
     if name == 'origin':
-        new_list.append("origin")
+        counter_show2['origin'] += 1
         return render(request,'landing.html')
     elif name == 'test':
-        new_list.append("test")
+        counter_show2['test'] += 1
         return render(request, 'landing_alternate.html')
 
 
 def stats(request):
     # Реализуйте логику подсчета отношения количества переходов к количеству показов страницы
     # Для вывода результат передайте в следующем формате:
-    counter_click = Counter(new_list2)
-    counter_show = Counter(new_list)
-    relationship_of_count1 = float(counter_click["test"]/counter_show["test"])
-    relationship_of_count2 = float(counter_click["original"]/counter_show["origin"])
-    return render(request,'stats.html', context={
-        'test_conversion': relationship_of_count1,
-        'original_conversion': relationship_of_count2,
-    })
+
+    try:
+        relationship_of_count1 = float(counter_click2["test"]/counter_show2["test"])
+        relationship_of_count2 = float(counter_click2["original"]/counter_show2["origin"])
+        return render(request,'stats.html', context={ 'test_conversion': relationship_of_count1, 'original_conversion': relationship_of_count2,})
+    except ZeroDivisionError:
+        return render(request, 'stats.html', context={ 'test_conversion': 'Произошло деление на ноль', 'original_conversion': "Произошло деление на ноль",})
